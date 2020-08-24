@@ -67,9 +67,9 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             email: req.body.email,
             password: hashedPassword,
         })
-        res.redirect('/login');
+        res.redirect('/');
     } catch {
-        res.redirect('register');
+        res.redirect('/register');
     }
     console.log(users);
 })
@@ -79,7 +79,7 @@ app.delete('/logout', (req, res) => {
     res.redirect('/login');
 })
 
-app.get('/api/home', function (req, res) {
+app.get('/welcome', (req, res) => {
     res.send('Welcome!');
 });
 
