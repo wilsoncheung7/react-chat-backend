@@ -10,6 +10,7 @@ const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const cors = require("cors");
+const bodyParser = require('body-parser');
 
 const initializePassport = require('./passport-config')
 initializePassport(
@@ -22,7 +23,11 @@ const users = []
 
 
 app.set('view-engine', 'ejs');
-app.use(cors())
+app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.urlencoded({ extended: false }))
 app.use(flash());
 app.use(session({
@@ -74,9 +79,16 @@ app.delete('/logout', (req, res) => {
     res.redirect('/login');
 })
 
-app.get('/welcome', function(req, res) {
+app.get('/api/home', function (req, res) {
     res.send('Welcome!');
-  });
+});
+
+app.post('/world', (req, res) => {
+    console.log(req.body);
+    res.send(
+        `I received your POST request. This is what you sent me: ${req.body.post}`,
+    );
+});
 
 function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
