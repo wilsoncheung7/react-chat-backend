@@ -50,7 +50,7 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/user',
-    failureRedirect: '/login',
+    failureRedirect: '/',
     failureFlash: true,
 }))
 
@@ -67,7 +67,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             email: req.body.email,
             password: hashedPassword,
         })
-        res.redirect('/login');
+        res.redirect('/');
     } catch {
         res.redirect('/register');
     }
@@ -76,7 +76,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 
 app.delete('/logout', (req, res) => {
     req.logOut();
-    res.redirect('/login');
+    res.redirect('/');
 })
 
 app.get('/welcome', (req, res) => {
@@ -94,11 +94,11 @@ function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/');
 }
 function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
-        return res.redirect('/');
+        return res.redirect('/user');
     }
     next();
 }
