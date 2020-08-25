@@ -49,7 +49,7 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
 })
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
+    successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true,
 }))
@@ -67,7 +67,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             email: req.body.email,
             password: hashedPassword,
         })
-        res.redirect('/');
+        res.redirect('/login');
     } catch {
         res.redirect('/register');
     }
