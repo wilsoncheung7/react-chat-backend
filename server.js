@@ -44,6 +44,11 @@ app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
 });
 
+app.get('/name', checkAuthenticated, (req, res) => {
+    res.send('req.user.name');
+});
+
+
 app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
 })
@@ -83,18 +88,19 @@ app.get('/welcome', (req, res) => {
     res.send('Welcome!');
 });
 
-app.post('/world', (req, res) => {
-    console.log(req.body);
-    res.send(
-        `I received your POST request. This is what you sent me: ${req.body.post}`,
-    );
-});
+
+// app.post('/world', (req, res) => {
+//     console.log(req.body);
+//     res.send(
+//         `I received your POST request. This is what you sent me: ${req.body.post}`,
+//     );
+// });
 
 function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/');
+    // res.redirect('/');
 }
 function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
