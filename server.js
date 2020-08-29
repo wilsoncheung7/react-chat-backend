@@ -19,8 +19,7 @@ initializePassport(
     id => users.find(user => user.id === id),
 );
 
-const users = []
-
+const users = [];
 
 app.set('view-engine', 'ejs');
 app.use(cors());
@@ -44,8 +43,8 @@ app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
 });
 
-app.get('/name', checkAuthenticated, (req, res) => {
-    res.send('req.user.name');
+app.get('/name', (req, res) => {
+    res.send(users[0].name);
 });
 
 
@@ -72,7 +71,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             email: req.body.email,
             password: hashedPassword,
         })
-        res.redirect('/');
+        res.redirect('/login');
     } catch {
         res.redirect('/register');
     }
@@ -100,7 +99,7 @@ function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    // res.redirect('/');
+    res.redirect('/');
 }
 function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
