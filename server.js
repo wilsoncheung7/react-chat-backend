@@ -11,12 +11,39 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
+const url = "mongodb://localhost:27017/";
 
 const initializePassport = require('./passport-config')
 initializePassport(
     passport,
-    email => users.find(user => user.email === email),
-    id => users.find(user => user.id === id),
+    // email => users.find(user => user.email === email),
+    // _id => users.find(user => user._id === _id),
+    email => MongoClient.connect(url, { useUnifiedTopology: true }, (err, db) => {
+        if (err) throw err;
+        const dbo = db.db('reactchat');
+        const collection = dbo.collection('users');
+        const query = { email: email };
+        collection.find(query).toArray((err, result) => {
+            if (err) throw err;
+            console.log(result);
+            db.close();
+            return result.email;
+        })
+
+    }),
+    _id => MongoClient.connect(url, { useUnifiedTopology: true }, (err, db) => {
+        if (err) throw err;
+        const dbo = db.db('reactchat');
+        const collection = dbo.collection('users');
+        const query = { _id: _id };
+        collection.find(query).toArray((err, result) => {
+            if (err) throw err;
+            db.close();
+            return result._id;
+        })
+
+    }),
 );
 
 const users = [];
@@ -65,12 +92,27 @@ app.get('/register', checkNotAuthenticated, (req, res) => {
 app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword,
-        })
+        // users.push({
+        //     id: Date.now().toString(),
+        //     name: req.body.name,
+        //     email: req.body.email,
+        //     password: hashedPassword,
+        // })
+        MongoClient.connect(url, { useUnifiedTopology: true }, (err, db) => {
+            if (err) throw err;
+            const dbo = db.db('reactchat');
+            const user = {
+                _id: Date.now().toString(),
+                name: req.body.name,
+                email: req.body.email,
+                password: hashedPassword,
+            };
+            dbo.collection('users').insertOne(user, (err, result) => {
+                if (err) throw err;
+                console.log('Created user: ' + result);
+                db.close();
+            });
+        });
         res.redirect('/login');
     } catch {
         res.redirect('/register');
